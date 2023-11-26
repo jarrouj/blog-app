@@ -13,6 +13,7 @@ const signup = async (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
+    
 
     try {
         // Check if the user with the given email already exists
@@ -21,11 +22,14 @@ const signup = async (req, res) => {
             return res.status(409).send('Email already in use');
         }
 
-        // Create a new user using the User model
         const newUser = new User(null, name, email, password);
         await User.create(newUser);
 
-        // Redirect or send a success response
+        
+        req.session.email=email;
+        req.session.password=password;
+
+
         res.redirect(`/profile?email=${(email)}&password=${(password)}`);
     } catch (error) {
         console.error('Signup error:', error);

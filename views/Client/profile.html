@@ -5,7 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" href="/css/profile.css">
-    
+    <style>
+   .popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.popup-content {
+  padding: 20px;
+}
+
+/* Close Button Styles */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+/* Form Styles */
+form {
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="file"] {
+  margin-bottom: 15px;
+}
+
+textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Overlay Styles (to darken the background when the popup is open) */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+/* Additional Styles for Better Appearance */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Show overlay when popup is open */
+.popup.show, .overlay.show {
+  display: block;
+}
+
+    </style>
 </head>
 <body>
     <header>
@@ -15,7 +106,7 @@
             <div class="profile">
     
                 <div class="profile-image">
-                    <img id="profilePicture" src="" alt="" style="height: 20rem;">
+                    <img id="profilePicture" src="https://t4.ftcdn.net/jpg/00/64/67/27/360_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg" alt="" style="height: 20rem;">
                 </div>
     
                 <div class="profile-user-settings" style="position: relative; left: 35px;">
@@ -25,11 +116,25 @@
                     </div>
                     <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
                     <!-- Add Post Button -->
-                    <a class="btn add-post-btn" aria-label="add post" href='/add-post' 
+                    <button class="btn add-post-btn" aria-label="add post" id="addPostBtn" 
                     style="background-color: rgb(47, 212, 47); color: white; border: none; padding: 14px; text-decoration: none; cursor: pointer; 
                     font-size: 16px; font-weight: bold; border-radius: 5px; ">
                     Add Post <i class="fas fa-plus"></i>
-                  </a>
+                </button>
+
+                <div id="addPostPopup" class="popup">
+                    <div class="popup-content">
+                      <span class="close-btn" id="closePopupBtn">&times;</span>
+                      <form id="addPostForm" action="/add-post" method="post" enctype="multipart/form-data">
+                        <label for="postImage" style="font-size: 20px;">Select an image:</label>
+                        <input type="file" name="postImage" accept="image/*" required>
+                        <br>
+                        <br>
+                        <button type="submit">Upload Post</button>
+                      </form>
+                    </div>
+                  </div>
+
                   <div class="paste-button">
                     <button class="button">Delete &nbsp; ▼</button>
                     <div class="dropdown-content">
@@ -197,8 +302,11 @@
             // Update the profile picture
             const profilePicture = document.getElementById('profilePicture');
             console.log(data.profilePic)
+            profilePicture.onerror = function() {
+                // Set a default image if the profile picture fails to load
+                profilePicture.src = 'https://t4.ftcdn.net/jpg/00/64/67/27/360_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg';
+            };
             if (data.profilePic) {
-                
                 profilePicture.src = `/images/${data.profilePic}`;
             } else {
                 // Set a default image or leave it blank
@@ -211,5 +319,28 @@
         })
         .catch(error => console.error('Error fetching bio data:', error));
 </script>
+<script>
+    // JavaScript to handle the popup
+    const addPostBtn = document.getElementById('addPostBtn');
+    const addPostPopup = document.getElementById('addPostPopup');
+    const closePopupBtn = document.getElementById('closePopupBtn');
+  
+    addPostBtn.addEventListener('click', () => {
+      addPostPopup.style.display = 'block';
+    });
+  
+    // Close the popup when the user clicks on the close button
+    closePopupBtn.addEventListener('click', () => {
+      addPostPopup.style.display = 'none';
+    });
+  
+    // Close the popup when the user clicks outside of it
+    window.addEventListener('click', (event) => {
+      if (event.target === addPostPopup) {
+        addPostPopup.style.display = 'none';
+      }
+    });
+  </script>
+
 </body>
 </html>

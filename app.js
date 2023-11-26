@@ -84,72 +84,48 @@ app.get('/', (req, res) => {
 });
 
 
-
+//Authentication
 app.post('/signup', signup);
 app.post('/signin',signin);
-app.get('/bio-edit', ClientController.bioEdit);
-app.get('/show_bio',ClientController.show_bio)
 
-// Example profile route
+
+app.get('/bio-edit', ClientController.bioEdit);//open edit page
+app.get('/showBio', ClientController.show_bio);//show bio and image in public.html and in bio-edit.html
+app.post('/update-bio', upload2.single('profilePicture'), ClientController.updateBio);//configure the update query for the bio and image
+app.get('/delete-bio', ClientController.deleteBio); //remove bio
+app.get('/delete-profilepic',ClientController.delete_image);//remove profile picture
+app.get('/delete-account', ClientController.deleteAccount);//delete user
+
+
+
+//profile route
 app.get('/profile', ClientController.profile);
 
-
+//show the looged in name in the public.html (username of the user)
 app.get('/api/getUserName', ClientController.loggedName);
 
 
 
+const Image = require('./model/images'); // Import the Image model
 
-
-app.post('/update-bio', upload2.single('profilePicture'), async (req, res) => {
-  const email = req.session.email;
-  const userId = req.session.userId;
-  const password = req.session.password;
-  const description = req.body.bio;
-  const profilePic = req.file ? req.file.filename : null;
-
+app.post('/add-post', upload2.single('postImage'), async (req, res) => {
   try {
-    // Check if bio exists for the user
-    const existingBio = await Bio.findByUserId(userId);
-console.log(existingBio);
-    if (existingBio) {
-      // Bio exists, update it
-      await Bio.update(description, profilePic, userId);
+    const user_id = req.session.userId; // Get the user ID from the session
+    const image = req.file.buffer; // Get the image data from the request
+    const email = req.body.email;
+    const password = req.body.password;
 
-    } else {
-      // Bio does not exist, create a new one
-      const newBio = new Bio(null, description, profilePic, userId);
-      await Bio.create(newBio);
-    }
+    // Create a new Image object
+    const newImage = new Image(null, image, user_id);
 
+    // Save the image to the database
+    await Image.create({ image: newImage.image, user_id: newImage.user_id });
+
+
+    // Redirect or send a success response
     res.redirect(`/profile?email=${email}&password=${password}`);
   } catch (error) {
-    console.error('Update bio error:', error);
+    console.error('Image upload error:', error);
     res.status(500).send('Internal server error');
   }
-});
-
-app.get('/showBio', (req, res) => {
-  const userId = req.session.userId;
-
-  connect.connection.query(
-    'SELECT * FROM bio,user WHERE bio.user_id = user.id AND bio.user_id = ?',
-    [userId],
-    (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-      } else {
-        if (results.length > 0) {
-          // Set session variables
-          req.session.description = results[0].description;
-          req.session.profilePic = results[0].profilepic;
-
-          // Send the bio data as JSON
-          res.json({ description: req.session.description, profilePic: req.session.profilePic });
-        } else {
-          res.status(404).json({ error: 'Bio not found' });
-        }
-      }
-    }
-  );
 });

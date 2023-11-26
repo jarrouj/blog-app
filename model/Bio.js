@@ -74,6 +74,30 @@ class Bio {
       throw err;
     }
   }
+
+
+  static async deleteDescriptionByUserId(user_id) {
+    try {
+      await connect.connection.query('UPDATE bio SET description = NULL WHERE user_id = ?', [user_id]);
+    } catch (err) {
+      console.error('Error deleting description from bio:', err);
+      throw err;
+    }
+  }
+  
+  static async deleteProfilePicByUserId(user_id) {
+    try {
+      await connect.connection.query('UPDATE bio SET profilepic = null WHERE user_id = ?', [user_id]);
+    } catch (err) {
+      console.error('Error deleting profile picture:', err);
+      throw err;
+    }
+  }
+
 }
+
+
+
+
 
 module.exports = {Bio};
