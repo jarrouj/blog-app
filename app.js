@@ -4,18 +4,45 @@ const bodyParser = require('body-parser');
 const app = express();
 const connect=require('./model/DBConnection')
 const multer = require('multer'); // For handling file uploads
+const session = require('express-session');
+const {User} = require('./model/User')
+const {Bio} = require('./model/Bio')
+
+
+app.use(
+  session({
+    secret: 'jorj',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 
 
-const isAuthenticated = (req, res, next) => {
-  if (req.session.userId) {
-    // User is authenticated, proceed to the next middleware or route handler
-    next();
-  } else {
-    // User is not authenticated, redirect to the login page or handle accordingly
-    res.redirect('/login');
-  }
-};
+// const isAuthenticated = async (req, res, next) => {
+//   try {
+//     const userEmail = req.query.email; // Assuming the email is in the query parameters
+//     const user = await User.findByEmail(userEmail);
+
+//     if (user) {
+//       // User is authenticated, proceed to the next middleware or route handler
+//       next();
+//     }
+//   } catch (error) {
+//     console.error('Authentication error:', error);
+//     res.status(500).send('Internal server error');
+//   }
+// };
+
+
+const storage2 = multer.diskStorage({
+  destination: 'public/images',
+  filename: function (req, file, cb) {
+    // Use the original name of the file
+    cb(null, file.originalname);
+  },
+});
+const upload2 = multer({ storage: storage2 });
 
 
 // Set up multer for handling file uploads
@@ -59,8 +86,12 @@ app.get('/', (req, res) => {
 
 
 app.post('/signup', signup);
-app.get('/signin',isAuthenticated,signin);
+app.post('/signin',signin);
 app.get('/bio-edit', ClientController.bioEdit);
+app.get('/show_bio',ClientController.show_bio)
+
+// Example profile route
+app.get('/profile', ClientController.profile);
 
 
 app.get('/api/getUserName', ClientController.loggedName);
@@ -68,57 +99,57 @@ app.get('/api/getUserName', ClientController.loggedName);
 
 
 
-// Route to display the form with the current user's data
-app.get('/edit-bio', (req, res) => {
-  const userId = req.session.userId || req.query.userId;
 
-  if (!userId) {
-    return res.status(400).send('User ID not provided');
+app.post('/update-bio', upload2.single('profilePicture'), async (req, res) => {
+  const email = req.session.email;
+  const userId = req.session.userId;
+  const password = req.session.password;
+  const description = req.body.bio;
+  const profilePic = req.file ? req.file.filename : null;
+
+  try {
+    // Check if bio exists for the user
+    const existingBio = await Bio.findByUserId(userId);
+console.log(existingBio);
+    if (existingBio) {
+      // Bio exists, update it
+      await Bio.update(description, profilePic, userId);
+
+    } else {
+      // Bio does not exist, create a new one
+      const newBio = new Bio(null, description, profilePic, userId);
+      await Bio.create(newBio);
+    }
+
+    res.redirect(`/profile?email=${email}&password=${password}`);
+  } catch (error) {
+    console.error('Update bio error:', error);
+    res.status(500).send('Internal server error');
   }
-
-  const query = `
-    SELECT u.name, b.description, b.profilepic
-    FROM user u
-    LEFT JOIN bio b ON u.id = b.userid
-    WHERE u.id = ?
-  `;
-
-  connect.connection.query(query, [userId], (err, result) => {
-    if (err) {
-      return res.status(500).send('Internal Server Error');
-    }
-
-    if (result.length === 0) {
-      return res.status(404).send('User not found');
-    }
-
-    const userData = result[0];
-    res.sendFile(path.join(__dirname, 'public', 'bio-edit.html'));
-  });
 });
 
-// Route to handle the form submission for updating the bio
-app.post('/update-bio', upload.single('profilePicture'), (req, res) => {
-  const userId = req.session.userId || req.body.userId;
+app.get('/showBio', (req, res) => {
+  const userId = req.session.userId;
 
-  if (!userId) {
-    return res.status(400).send('User ID not provided');
-  }
+  connect.connection.query(
+    'SELECT * FROM bio,user WHERE bio.user_id = user.id AND bio.user_id = ?',
+    [userId],
+    (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+      } else {
+        if (results.length > 0) {
+          // Set session variables
+          req.session.description = results[0].description;
+          req.session.profilePic = results[0].profilepic;
 
-  const { bio } = req.body;
-
-  const updateBioQuery = `
-    INSERT INTO bio (userid, description, profilepic)
-    VALUES (?, ?, ?)
-    ON DUPLICATE KEY UPDATE description = VALUES(description), profilepic = VALUES(profilepic)
-  `;
-
-  connect.connection.query(updateBioQuery, [userId, bio, req.file.buffer], (err) => {
-    if (err) {
-      return res.status(500).send('Internal Server Error');
+          // Send the bio data as JSON
+          res.json({ description: req.session.description, profilePic: req.session.profilePic });
+        } else {
+          res.status(404).json({ error: 'Bio not found' });
+        }
+      }
     }
-
-    res.redirect('/profile');
-  });
+  );
 });
-

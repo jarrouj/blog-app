@@ -6,7 +6,6 @@
     <title>Profile</title>
     <link rel="stylesheet" href="/css/profile.css">
     
-    
 </head>
 <body>
     <header>
@@ -15,22 +14,33 @@
     
             <div class="profile">
     
-                <div class="profile-image" >
-    
-                    <img src="https://t4.ftcdn.net/jpg/00/64/67/27/360_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg" alt="" 
-                     style="height: 20rem;">
-    
+                <div class="profile-image">
+                    <img id="profilePicture" src="" alt="" style="height: 20rem;">
                 </div>
     
                 <div class="profile-user-settings" style="position: relative; left: 35px;">
                     <h1 class="profile-user-name" id="profileUserName">John</h1>
                     <div class="dropdown">
                         <a class="btn profile-edit-btn" href="/bio-edit" style="text-decoration: none;">Edit Profile <i class="fas fa-caret-down"></i></a>
-                      
                     </div>
                     <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
-                </div>
-    
+                    <!-- Add Post Button -->
+                    <a class="btn add-post-btn" aria-label="add post" href='/add-post' 
+                    style="background-color: rgb(47, 212, 47); color: white; border: none; padding: 14px; text-decoration: none; cursor: pointer; 
+                    font-size: 16px; font-weight: bold; border-radius: 5px; ">
+                    Add Post <i class="fas fa-plus"></i>
+                  </a>
+                  <div class="paste-button">
+                    <button class="button">Delete &nbsp; ▼</button>
+                    <div class="dropdown-content">
+                      <a id="top" href="/delete-profilepic">Delete Profile Picture</a>
+                      <a id="middle" href="/delete-bio">Delete Bio</a>
+                      <a id="bottom" href="/delete-account">Delete Account</a>
+                    </div>
+                  </div>
+               </div>
+
+
                 <div class="profile-stats">
     
                     <ul>
@@ -42,9 +52,7 @@
                 </div>
     
                 <div class="profile-bio">
-    
-                    <p><span class="profile-real-name" style="position: relative; left: 35px;">ADD BIO ... </p>
-    
+                    <p><span class="profile-real-name" style="position: relative; left: 35px;" id="bioText">ADD BIO ...</span></p>
                 </div>
     
             </div>
@@ -175,6 +183,33 @@
         }
     }
     </script>
-    
+
+<script>
+    // Fetch bio data and populate the form fields
+    fetch('/showBio')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Update the profile picture
+            const profilePicture = document.getElementById('profilePicture');
+            console.log(data.profilePic)
+            if (data.profilePic) {
+                
+                profilePicture.src = `/images/${data.profilePic}`;
+            } else {
+                // Set a default image or leave it blank
+                profilePicture.src = 'https://t4.ftcdn.net/jpg/00/64/67/27/360_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg';
+            }
+
+            // Update the bio text
+            const bioText = document.getElementById('bioText');
+            bioText.textContent = data.description || 'ADD BIO ...';
+        })
+        .catch(error => console.error('Error fetching bio data:', error));
+</script>
 </body>
 </html>

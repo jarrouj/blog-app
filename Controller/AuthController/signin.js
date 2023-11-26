@@ -1,44 +1,46 @@
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
 const app = express();
-var connect=require('../../model/DBConnection')
-const session = require('express-session');
+var connect = require('../../model/DBConnection');
 
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
-}));
+// Configure express-session middleware
+// app.use(
+//   session({
+//     secret: 'jorj',
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
 
 
-//Views Folder
+// Views Folder
 const ViewsPath = path.join(__dirname, '../../views');
 app.use(express.static(ViewsPath));
 
 const signin = (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-  
-    connect.connection.query(
-      "SELECT id FROM user WHERE email = ? AND password = ?",
-      [email, password],
-      (err, result) => {
-        if (err) {
-          console.error("Database error:", err);
-          res.send("<h1>Internal Server Error</h1>");
-        } else {
-          console.log("Query result:", result);
-  
-          // Set user ID in the session, regardless of the query result
-          req.session.userId = result.id;
-          console.log("session",req.session.userId);
-  
-          res.sendFile(path.join(ViewsPath, 'Client', 'profile.html'));
-        }
+  const email = req.body.email;
+  const password = req.body.password;
+
+  connect.connection.query(
+    "SELECT id FROM user WHERE email = ? AND password = ?",
+    [email, password],
+    (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        res.send("<h1>Internal Server Error</h1>");
+      } else {
+        req.session.email = email;
+
+        const userId = results[0].id;
+        req.session.userId = userId;
+        req.session.password=password;
+
+        res.redirect(`/profile?email=${(email)}&password=${(password)}`);
+      
       }
-    );
-  };
-  
-  
-  
-module.exports = signin ;
+    }
+  );
+};
+
+module.exports = signin;

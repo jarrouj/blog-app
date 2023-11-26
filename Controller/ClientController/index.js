@@ -2,10 +2,21 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const connect=require('../../model/DBConnection')
+const {User} = require('../../model/User')
+
 
 
 const ViewsPath = path.join(__dirname, '../../views');
 app.use(express.static(ViewsPath));
+
+
+
+
+//profile page
+const profile = async (req, res) => {
+      res.sendFile(path.join(ViewsPath, 'Client', 'profile.html'));
+  };
+  
 
 //edit bio page
 
@@ -34,9 +45,29 @@ const logged_name=(req, res) => {
     );
   };
 
+  const show_bio=(req,res)=>{
+    const userId=req.session.userId;
+
+    connect.connection.query(
+        'SELECT * FROM user WHERE user_id = ?',
+        [userId],
+        (err, result) => {
+            if (err) {
+                res.status(500).json({ error: 'Internal Server Error' });
+            } else {
+              res.json(result);
+  
+            }
+        }
+    );
+  }
+
 
 
   module.exports = {
     bioEdit: bioEdit,
     loggedName: logged_name,
+    profile : profile,
+    show_bio : show_bio,
+   
 };

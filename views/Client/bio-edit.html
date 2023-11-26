@@ -66,18 +66,30 @@
 
 <body>
     <form action="/update-bio" method="POST" enctype="multipart/form-data">
-        <h1>Edit Bio and Profile Picture</h1>
-        <!-- Bio -->
-        <label for="bio">Bio:</label>
-        <textarea id="bio" name="bio" rows="4" placeholder="Enter your bio..."></textarea>
-
-        <!-- Profile Picture -->
-        <label for="profilePicture">Profile Picture:</label>
-        <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
-
-        <!-- Submit Button -->
-        <button type="submit">Save Changes</button>
+      <h1>Edit Bio and Profile Picture</h1>
+      <!-- Bio -->
+      <label for="bio">Bio:</label>
+      <textarea id="bio" name="bio" rows="4" placeholder="Enter your bio..."></textarea>
+  
+      <!-- Profile Picture -->
+      <label for="profilePicture">Profile Picture:</label>
+      <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
+  
+      <!-- Submit Button -->
+      <button type="submit">Save Changes</button>
     </form>
-</body>
+  
+    <script>
+      // Fetch bio data and populate the form fields
+      fetch('/showBio')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('bio').value = data.description || '';
+          const profilePicElement = document.getElementById('profilePicture');
+        profilePicElement.src = `/images/${data.profilePic}` || '';
+      })        
+        .catch(error => console.error('Error fetching bio data:', error));
+    </script>
+  </body>
 
 </html>

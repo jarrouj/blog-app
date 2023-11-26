@@ -1,31 +1,36 @@
+
 const express = require('express');
 const path = require('path');
 const app = express();
-var connect=require('../../model/DBConnection')
+const {User} = require('../../model/User');
+// var connect = require('../../model/DBConnection');
 
-//Views Folder
+// Views Folder
 const ViewsPath = path.join(__dirname, '../../views');
 app.use(express.static(ViewsPath));
 
-
-const signup = (req, res) => {
-    const name = req.body.name; 
+const signup = async (req, res) => {
+    const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
 
-    // DB insert
-    connect.connection.query(
-        "INSERT INTO user (name, email, password) VALUES (?, ?, ?)",
-        [name, email, password],
-        (err, result) => {
-            if (err) {
-                res.send(err);
-            } else {
-                res.redirect(`/signin?email=${email}&password=${password}`);
-                
-            }
+    try {
+        // Check if the user with the given email already exists
+        const existingUser = await User.findByEmail(email);
+        if (existingUser) {
+            return res.status(409).send('Email already in use');
         }
-    );
+
+        // Create a new user using the User model
+        const newUser = new User(null, name, email, password);
+        await User.create(newUser);
+
+        // Redirect or send a success response
+        res.redirect(`/profile?email=${(email)}&password=${(password)}`);
+    } catch (error) {
+        console.error('Signup error:', error);
+        res.status(500).send('Internal server error');
+    }
 };
 
 module.exports = signup;
