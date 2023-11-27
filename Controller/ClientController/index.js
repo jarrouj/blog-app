@@ -4,6 +4,16 @@ const app = express();
 const connect=require('../../model/DBConnection')
 const {User} = require('../../model/User');
 const {Bio}=require('../../model/Bio')
+const session = require('express-session');
+
+
+app.use(
+  session({
+    secret: 'jorj',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 
 

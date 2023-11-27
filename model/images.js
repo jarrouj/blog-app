@@ -1,18 +1,18 @@
 const connect = require('./DBConnection'); // Import your database connection module
 
-class Image {
-  constructor(id, image, user_id) {
-    this.id = id;
-    this.image = image;
-    this.user_id = user_id;
-  }
-
-  static create(imageData) {
-    const query = 'INSERT INTO images (image, user_id) VALUES (?, ?)';
-    const values = [imageData.image, imageData.user_id];
-
-    return connect.connection.query(query, values);
+class ImageModel {
+  static addImage(image, user_id) {
+    return new Promise((resolve, reject) => {
+      const query = 'INSERT INTO images (image, user_id) VALUES (?, ?)';
+      connect.connection.query(query, [image, user_id], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    });
   }
 }
 
-module.exports = Image;
+module.exports = ImageModel;

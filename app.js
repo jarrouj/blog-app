@@ -56,6 +56,8 @@ const signin = require('./Controller/AuthController/signin');
 //client controllers
 const ClientController=require('./Controller/ClientController/index');
 
+//post controllers
+const PostController = require('./Controller/PostController/index');
 
 
 //Public Folder Path
@@ -106,26 +108,8 @@ app.get('/api/getUserName', ClientController.loggedName);
 
 
 
-const Image = require('./model/images'); // Import the Image model
+git add .
 
-app.post('/add-post', upload2.single('postImage'), async (req, res) => {
-  try {
-    const user_id = req.session.userId; // Get the user ID from the session
-    const image = req.file.buffer; // Get the image data from the request
-    const email = req.body.email;
-    const password = req.body.password;
+// POST route for adding a post
+app.post('/add-post', upload2.single('postImage'),PostController.AddPost)
 
-    // Create a new Image object
-    const newImage = new Image(null, image, user_id);
-
-    // Save the image to the database
-    await Image.create({ image: newImage.image, user_id: newImage.user_id });
-
-
-    // Redirect or send a success response
-    res.redirect(`/profile?email=${email}&password=${password}`);
-  } catch (error) {
-    console.error('Image upload error:', error);
-    res.status(500).send('Internal server error');
-  }
-});
