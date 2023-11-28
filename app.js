@@ -91,13 +91,6 @@ app.post('/signup', signup);
 app.post('/signin',signin);
 
 
-app.get('/bio-edit', ClientController.bioEdit);//open edit page
-app.get('/showBio', ClientController.show_bio);//show bio and image in public.html and in bio-edit.html
-app.post('/update-bio', upload2.single('profilePicture'), ClientController.updateBio);//configure the update query for the bio and image
-app.get('/delete-bio', ClientController.deleteBio); //remove bio
-app.get('/delete-profilepic',ClientController.delete_image);//remove profile picture
-app.get('/delete-account', ClientController.deleteAccount);//delete user
-
 
 
 //profile route
@@ -106,10 +99,16 @@ app.get('/profile', ClientController.profile);
 //show the looged in name in the public.html (username of the user)
 app.get('/api/getUserName', ClientController.loggedName);
 
+//Bio 
+app.get('/bio-edit', ClientController.bioEdit);//open edit page
+app.get('/showBio', ClientController.show_bio);//show bio and image in public.html and in bio-edit.html
+app.post('/update-bio', upload2.single('profilePicture'), ClientController.updateBio);//configure the update query for the bio and image
+app.get('/delete-bio', ClientController.deleteBio); //remove bio
+app.get('/delete-profilepic',ClientController.delete_image);//remove profile picture
+app.get('/delete-account', ClientController.deleteAccount);//delete user
 
 
-git add .
-
-// POST route for adding a post
-app.post('/add-post', upload2.single('postImage'),PostController.AddPost)
-
+//Posts Apis
+app.post('/add-post', upload2.single('postImage'),PostController.AddPost);// Add post api
+app.get('/show-images', PostController.ShowPost);   // get all Posts api
+app.get('/delete-post/:id', PostController.deletePost);  // delete a specific post api

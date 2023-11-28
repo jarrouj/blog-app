@@ -96,6 +96,24 @@ body {
   display: block;
 }
 
+.gallery-item-likes a,
+.gallery-item-comments a,
+.gallery-item-edit a,
+.gallery-item-delete a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 5px; /* Add margin for spacing */
+}
+
+.gallery-item-likes a:hover,
+.gallery-item-comments a:hover,
+.gallery-item-edit a:hover,
+.gallery-item-delete a:hover {
+    text-decoration: underline;
+    /* Add any additional styling for hover state */
+}
+
     </style>
 </head>
 <body>
@@ -161,71 +179,17 @@ body {
                 </div>
     
             </div>
-            <!-- End of profile section -->
     
-        </div>
-        <!-- End of container -->
-    
+        </div>    
     </header>
     
     <main>
     
         <div class="container">
     
-            <div class="gallery">
+          <div class="gallery" id="imageGallery"></div>
     
-                <div class="gallery-item" tabindex="0">
-    
-                    <img src="https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?w=500&h=500&fit=crop" class="gallery-image" alt="">
-    
-                    <div class="gallery-item-info">
-    
-                        <ul>
-                            <li class="gallery-item-likes"><span class="visually-hidden">Likes:</span><i class="fas fa-heart" aria-hidden="true"></i> 56</li>
-                            <li class="gallery-item-comments"><span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i> 2</li>
-                        </ul>
-    
-                    </div>
-    
-                </div>
-    
-                <div class="gallery-item" tabindex="0">
-    
-                    <img src="https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop" class="gallery-image" alt="">
-    
-                    <div class="gallery-item-info">
-    
-                        <ul>
-                            <li class="gallery-item-likes"><span class="visually-hidden">Likes:</span><i class="fas fa-heart" aria-hidden="true"></i> 89</li>
-                            <li class="gallery-item-comments"><span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i> 5</li>
-                        </ul>
-    
-                    </div>
-    
-                </div>
-    
-                <div class="gallery-item" tabindex="0">
-    
-                    <img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=500&h=500&fit=crop" class="gallery-image" alt="">
-    
-                    <div class="gallery-item-type">
-    
-                        <span class="visually-hidden">Gallery</span><i class="fas fa-clone" aria-hidden="true"></i>
-    
-                    </div>
-    
-                    <div class="gallery-item-info">
-    
-                        <ul>
-                            <li class="gallery-item-likes"><span class="visually-hidden">Likes:</span><i class="fas fa-heart" aria-hidden="true"></i> 42</li>
-                            <li class="gallery-item-comments"><span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i> 1</li>
-                        </ul>
-    
-                    </div>
-    
-                </div>
-    
-              
+             
     
                 
     
@@ -236,6 +200,54 @@ body {
         <!-- End of container -->
     
     </main>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('/show-images');
+    const { images } = await response.json();
+
+    const imageGallery = document.getElementById('imageGallery');
+
+    images.forEach(image => {
+  const galleryItem = document.createElement('div');
+  galleryItem.classList.add('gallery-item');
+  galleryItem.tabIndex = 0;
+
+  const imgElement = document.createElement('img');
+  imgElement.src = `/images/${image.image}`; // Assuming the image object has an 'image' property with the file name
+  imgElement.classList.add('gallery-image');
+  imgElement.alt = ''; // Set your alt text if needed
+
+  const galleryItemInfo = document.createElement('div');
+  galleryItemInfo.classList.add('gallery-item-info');
+
+  const ulElement = document.createElement('ul');
+
+  const likesListItem = document.createElement('li');
+  likesListItem.classList.add('gallery-item-likes');
+  likesListItem.innerHTML = `<span class="visually-hidden">Likes:</span><i class="fas fa-heart" aria-hidden="true"></i><a href="/edit-post"> Edit </a>`;
+
+  const commentsListItem = document.createElement('li');
+  commentsListItem.classList.add('gallery-item-comments');
+  commentsListItem.innerHTML = `<span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i> <a href="/delete-post/${image.id}"> Delete </a>`;
+
+  ulElement.appendChild(likesListItem);
+  ulElement.appendChild(commentsListItem);
+
+  galleryItemInfo.appendChild(ulElement);
+
+  galleryItem.appendChild(imgElement);
+  galleryItem.appendChild(galleryItemInfo);
+
+  imageGallery.appendChild(galleryItem);
+});
+  } catch (error) {
+    console.error('Error fetching and displaying images:', error);
+  }
+});
+    </script>
+    
     <script>
         async function fetchUserName() {
             try {
