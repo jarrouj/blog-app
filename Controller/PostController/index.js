@@ -1,5 +1,12 @@
 
 const Image = require('../../model/images')
+const connect = require('../../model/DBConnection')
+const express = require('express');
+const path = require('path');
+const app = express();
+
+const ViewsPath = path.join(__dirname, '../../views');
+app.use(express.static(ViewsPath));
 
 const AddPost = async (req, res) => {
     try {
@@ -61,9 +68,15 @@ const AddPost = async (req, res) => {
   };
 
 
+  const show_editPost=(req, res) => {
+    res.sendFile(path.join(ViewsPath, 'Client', 'editPost.html'));
+  };
+
+
   module.exports = {
  AddPost: AddPost,
  ShowPost : ShowPost,
  deletePost : deletePost,
+ show_editPost : show_editPost,
    
 };

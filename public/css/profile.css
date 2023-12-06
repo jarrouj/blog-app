@@ -488,4 +488,111 @@ Remove or comment-out the code block below to see how the browser will fall-back
       top: -55px;
       left: 300px;
   }
+  .popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1000;
+  }
+  
+  .popup-content {
+    padding: 20px;
+  }
+  
+  /* Close Button Styles */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #555;
+  }
+  
+  .close-btn:hover {
+    color: #333;
+  }
+  
+  /* Form Styles */
+  form {
+    text-align: center;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  input[type="file"] {
+    margin-bottom: 15px;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Overlay Styles (to darken the background when the popup is open) */
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+  }
+  
+  /* Additional Styles for Better Appearance */
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Show overlay when popup is open */
+  .popup.show, .overlay.show {
+    display: block;
+  }
+  
+  .gallery-item-likes a,
+  .gallery-item-comments a,
+  .gallery-item-edit a,
+  .gallery-item-delete a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      margin-left: 5px; /* Add margin for spacing */
+  }
+  
+  .gallery-item-likes a:hover,
+  .gallery-item-comments a:hover,
+  .gallery-item-edit a:hover,
+  .gallery-item-delete a:hover {
+      text-decoration: underline;
+      /* Add any additional styling for hover state */
+  }
   

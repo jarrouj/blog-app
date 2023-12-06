@@ -50,6 +50,7 @@ const profile = async (req, res) => {
 
       res.sendFile(path.join(ViewsPath, 'Client', 'profile.html'));
   };
+
   
 
 //edit bio page

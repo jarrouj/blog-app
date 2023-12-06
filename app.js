@@ -112,3 +112,4 @@ app.get('/delete-account', ClientController.deleteAccount);//delete user
 app.post('/add-post', upload2.single('postImage'),PostController.AddPost);// Add post api
 app.get('/show-images', PostController.ShowPost);   // get all Posts api
 app.get('/delete-post/:id', PostController.deletePost);  // delete a specific post api
+
