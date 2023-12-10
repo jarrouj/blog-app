@@ -423,11 +423,13 @@ Remove or comment-out the code block below to see how the browser will fall-back
 /* drop down delete button */
 .paste-button {
     position: relative;
-    display: block;
+    
+    /* display: block; */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
   
   .button {
+    
     background-color: #a70202;
     color: #fffcfc;
     padding: 10px 15px;
@@ -596,3 +598,82 @@ Remove or comment-out the code block below to see how the browser will fall-back
       /* Add any additional styling for hover state */
   }
   
+
+
+  .popup-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 70%;
+    text-align: center; /* Center the content */
+    position: relative; /* Ensure the close button is positioned relative to this container */
+}
+
+/* Style the close button for the edit popup */
+.edit-close-btn {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Style the form inside the edit popup */
+#editPostForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#editPostForm label {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+#editPostForm input {
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+#editPostForm button {
+    padding: 14px;
+    background-color: rgb(47, 212, 47);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#editPostForm button:hover {
+    background-color: #45a049;
+}
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }

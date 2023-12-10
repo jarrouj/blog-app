@@ -92,18 +92,17 @@ console.log(existingBio);
 //get logged user name
 
 const logged_name=(req, res) => {
-    const pass = req.query.password;
+    const email = req.session.email;
   
     // Fetch the user's name from the database
     connect.connection.query(
-        'SELECT name FROM user WHERE password = ?',
-        [pass],
+        'SELECT name FROM user WHERE email = ?',
+        [email],
         (err, result) => {
             if (err) {
                 res.status(500).json({ error: 'Internal Server Error' });
             } else {
               res.json(result);
-  
             }
         }
     );

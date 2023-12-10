@@ -5,68 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-/* Update your CSS content */
-.popup-content {
-    background-color: #fefefe;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 70%;
-    text-align: center; /* Center the content */
-    position: relative; /* Ensure the close button is positioned relative to this container */
-}
-
-/* Style the close button for the edit popup */
-.edit-close-btn {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-/* Style the form inside the edit popup */
-#editPostForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#editPostForm label {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-#editPostForm input {
-    padding: 10px;
-    margin-bottom: 20px;
-}
-
-#editPostForm button {
-    padding: 14px;
-    background-color: rgb(47, 212, 47);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-#editPostForm button:hover {
-    background-color: #45a049;
-}
-
+         .signout-button {
+            height: 30px;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 20px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+    }
     </style>
+   
 </head>
 <body>
+
+    <a href="/" class="signout-button">
+        <i class="signout-icon fas fa-sign-out-alt"></i>
+      </a>
+      
     <header>
 
         <div class="container">
     
+            
             <div class="profile">
     
                 <div class="profile-image">
@@ -76,17 +47,26 @@
                 <div class="profile-user-settings" style="position: relative; left: 35px;">
                     <h1 class="profile-user-name" id="profileUserName">John</h1>
                     <div class="dropdown">
-                        <a class="btn profile-edit-btn" href="/bio-edit" style="text-decoration: none;">Edit Profile <i class="fas fa-caret-down"></i></a>
+                        <a class="btn profile-edit-btn" href="/bio-edit" style="text-decoration: none;">Edit Profile </a>
                     </div>
-                    <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
                     <!-- Add Post Button -->
                     <button class="btn add-post-btn" aria-label="add post" id="addPostBtn" 
                     style="background-color: rgb(47, 212, 47); color: white; border: none; padding: 14px; text-decoration: none; cursor: pointer; 
-                    font-size: 16px; font-weight: bold; border-radius: 5px; ">
+                    font-size: 16px; font-weight: bold; border-radius: 5px; margin-left: 5px; ">
                     Add Post <i class="fas fa-plus"></i>
-                </button>
+                  </button>
+                  
 
-                <div id="addPostPopup" class="popup">
+                  <div class="dropdown" style="margin-left: 10px;">
+                    <button class="button">Delete &nbsp; ▼</button>
+                    <div class="dropdown-content">
+                      <a id="top" href="/delete-profilepic">Delete Profile Picture</a>
+                      <a id="middle" href="/delete-bio">Delete Bio</a>
+                      <a id="bottom" href="/delete-account">Delete Account</a>
+                    </div>
+                  </div>
+
+                 <div id="addPostPopup" class="popup">
                     <div class="popup-content">
                       <span class="close-btn" id="closePopupBtn">&times;</span>
                       <form id="addPostForm" action="/add-post" method="post" enctype="multipart/form-data">
@@ -99,14 +79,7 @@
                     </div>
                   </div>
 
-                  <div class="paste-button" style="margin-left: 20px;">
-                    <button class="button">Delete &nbsp; ▼</button>
-                    <div class="dropdown-content">
-                      <a id="top" href="/delete-profilepic">Delete Profile Picture</a>
-                      <a id="middle" href="/delete-bio">Delete Bio</a>
-                      <a id="bottom" href="/delete-account">Delete Account</a>
-                    </div>
-                  </div>
+                 
                </div>
 
 
@@ -141,18 +114,7 @@
     
             </div>
             <!-- End of gallery -->
-            <div id="editPopup" class="popup">
-                <div class="popup-content">
-                    <span class="close-btn" onclick="closePopup('editPopup')">&times;</span>
-                    <form id="editPostForm" onsubmit="updateImage(); return false;">
-                        <label for="postImage" style="font-size: 20px;">Choose a new image:</label>
-                        <input style="margin-left: 50px;" type="file" name="image" accept="image/*" required>
-                        <br>
-                        <br>
-                        <button type="submit">Update Post</button>
-                    </form>
-                </div>
-            </div>
+        
            
         <!-- End of container -->
     
@@ -208,13 +170,14 @@
 likesListItem.classList.add('gallery-item-likes');
 likesListItem.innerHTML = `
     <span class="visually-hidden">Likes:</span>
-    <i class="fas fa-heart" aria-hidden="true"></i>
-    <a href="#" class="edit-link" onclick="openEditPopup(${image.id})"> Edit </a>`;
+    
+  `;
 
 
   const commentsListItem = document.createElement('li');
   commentsListItem.classList.add('gallery-item-comments');
-  commentsListItem.innerHTML = `<span class="visually-hidden">Comments:</span><i class="fas fa-comment" aria-hidden="true"></i> <a href="/delete-post/${image.id}"> Delete </a>`;
+  commentsListItem.innerHTML = `<span class="visually-hidden">Comments:</span>
+  <a style="margin-right:60px;" href="/delete-post/${image.id}"> Delete </a>`;
 
   ulElement.appendChild(likesListItem);
   ulElement.appendChild(commentsListItem);

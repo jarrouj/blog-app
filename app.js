@@ -2,11 +2,10 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
-const connect=require('./model/DBConnection')
+// const connect=require('./model/DBConnection')
 const multer = require('multer'); // For handling file uploads
 const session = require('express-session');
-const {User} = require('./model/User')
-const {Bio} = require('./model/Bio')
+const connect = require('./model/DBConnection')
 
 
 app.use(
@@ -19,26 +18,11 @@ app.use(
 
 
 
-// const isAuthenticated = async (req, res, next) => {
-//   try {
-//     const userEmail = req.query.email; // Assuming the email is in the query parameters
-//     const user = await User.findByEmail(userEmail);
 
-//     if (user) {
-//       // User is authenticated, proceed to the next middleware or route handler
-//       next();
-//     }
-//   } catch (error) {
-//     console.error('Authentication error:', error);
-//     res.status(500).send('Internal server error');
-//   }
-// };
-
-
+//path to the public folder to store the images
 const storage2 = multer.diskStorage({
   destination: 'public/images',
   filename: function (req, file, cb) {
-    // Use the original name of the file
     cb(null, file.originalname);
   },
 });
@@ -49,9 +33,10 @@ const upload2 = multer({ storage: storage2 });
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+
 //sign up and sign in controllers
 const signup=require('./Controller/AuthController/signup');
-const signin = require('./Controller/AuthController/signin');
+const signin =require('./Controller/AuthController/signin');
 
 //client controllers
 const ClientController=require('./Controller/ClientController/index');
@@ -85,13 +70,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(ViewsPath, 'Auth', 'auth.html'));
 });
 
+// {{ Middleware }}
+const requireLogin = require("./middleware/login");
 
-//Authentication
+
+// {{ Authentication }}
 app.post('/signup', signup);
-app.post('/signin',signin);
+app.post('/signin', requireLogin,signin);
 
 
-
+                            // {{ Client Controller }}
 
 //profile route
 app.get('/profile', ClientController.profile);
@@ -99,7 +87,7 @@ app.get('/profile', ClientController.profile);
 //show the looged in name in the public.html (username of the user)
 app.get('/api/getUserName', ClientController.loggedName);
 
-//Bio 
+//Bio CRUD
 app.get('/bio-edit', ClientController.bioEdit);//open edit page
 app.get('/showBio', ClientController.show_bio);//show bio and image in public.html and in bio-edit.html
 app.post('/update-bio', upload2.single('profilePicture'), ClientController.updateBio);//configure the update query for the bio and image
@@ -107,6 +95,8 @@ app.get('/delete-bio', ClientController.deleteBio); //remove bio
 app.get('/delete-profilepic',ClientController.delete_image);//remove profile picture
 app.get('/delete-account', ClientController.deleteAccount);//delete user
 
+
+                              //{{ Post Controller}}
 
 //Posts Apis
 app.post('/add-post', upload2.single('postImage'),PostController.AddPost);// Add post api

@@ -4,14 +4,7 @@ const path = require('path');
 const app = express();
 var connect = require('../../model/DBConnection');
 
-// Configure express-session middleware
-// app.use(
-//   session({
-//     secret: 'jorj',
-//     resave: false,
-//     saveUninitialized: true,
-//   })
-// );
+
 
 
 // Views Folder
